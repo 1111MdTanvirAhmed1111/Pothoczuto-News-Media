@@ -1,5 +1,5 @@
 const express = require('express');
-const app = express();
+const {app} = require('@/Server/ServerStart')
 const path = require('path');
 const cors = require('cors')
 const { errorHandler, notFoundHandler } = require('@/utils/errorHandler'); // Updated

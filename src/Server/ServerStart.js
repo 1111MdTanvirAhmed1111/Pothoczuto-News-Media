@@ -3,7 +3,6 @@ const { createServer } = require('http')
 const { Server } = require('socket.io');
 const app = express();
 const httpServer = createServer(app);
-const cors = require('cors')
 const {socketWork} = require('@/config/socket');
 
 
@@ -22,7 +21,6 @@ const {getLocalIpAddress} = require('@/utils/ipAddress');
 const ipAddress = getLocalIpAddress();
 socketWork(io);
 const StartServer =  () => {
-  app.use(cors())
     const PORT = process.env.PORT || 5000;
     httpServer.listen(PORT, () => console.log(`Server running on port ${ipAddress}:${PORT}`));
 }
