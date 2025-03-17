@@ -9,8 +9,8 @@ const {socketWork} = require('@/config/socket');
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ["https://pothoczuto.xyz"], // Your Next.js app URL
-    methods: ["GET", "POST"],
+    // origin: ["https://pothoczuto.xyz"], // Your Next.js app URL
+    // methods: ["GET", "POST"],
     credentials: true,
     transports: ['websocket', 'polling'] // Add explicit transports
   },
