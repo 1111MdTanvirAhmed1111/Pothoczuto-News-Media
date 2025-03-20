@@ -53,7 +53,6 @@ model Reply {
   user      User      @relation(fields: [createdBy], references: [id])
 }
 
-// Post Model
 model Post {
   id        Int       @id @default(autoincrement())
   title     String
@@ -63,11 +62,30 @@ model Post {
   category  String?
   date      DateTime  @default(now())
   comments  Comment[]
-
+  votes     Vote[]    // Relation to Vote
+  categories Category[] // Many-to-many relation with Category
   author    User      @relation(fields: [authorId], references: [id]) // Relation to the User model
 }
 
-// User Model
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique // Category name, should be unique
+  posts     Post[]    // Many-to-many relation with Post
+
+  // Optionally, you can add other fields like description if needed
+}
+
+model Vote {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  voteType  String    // upvote or downvote
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id])
+  post      Post      @relation(fields: [postId], references: [id])
+}
+
 model User {
   id            Int          @id @default(autoincrement())
   username      String       @unique
@@ -83,8 +101,17 @@ model User {
   ownedFriends  UserFriend[] @relation(name: "UserToFriends")
   friendOf      UserFriend[] @relation(name: "FriendToUsers")
   
-  posts         Post[]       // New relation for posts
+  posts         Post[]       // Relation to posts
+  votes         Vote[]       // Relation to votes
 }
+
+// Define the enum for roles
+enum Role {
+writer
+admin
+user
+}
+
 
 // Friends relationship (Many-to-many between Users)
 model UserFriend {
