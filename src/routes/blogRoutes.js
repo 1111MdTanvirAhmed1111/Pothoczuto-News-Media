@@ -10,9 +10,6 @@ const router = express.Router();
 // Full Non Restricted ROutes
 
 router.get('/',GetPosts)
-router.get("/khanki",uploadSingle('PostImg'), (req, res) => {
-  res.send("Khanki")
-})
 
 // Intermediate Routes
 router.post('/' , authMiddleware, roleMiddleware('writer'), uploadSingle('PostImg'),createPost)
@@ -23,7 +20,7 @@ router.put('/:id'  ,authMiddleware,roleMiddleware('writer'), usersPostAuthentica
 //Admin MasterClass Routes
 
 router.delete('/:id' ,authMiddleware ,roleMiddleware('admin'), deletePost)
-router.put('/:id'  ,authMiddleware,roleMiddleware('admin'), usersPostAuthenticate, uploadSingle('PostImg'), updatePost)
+router.put('/:id'  ,authMiddleware,roleMiddleware('admin'),uploadSingle('PostImg'), updatePost)
 
 
 module.exports = router;

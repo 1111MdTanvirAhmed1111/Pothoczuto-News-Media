@@ -20,106 +20,107 @@ model Chatting {
 }
 
 model Message {
-  id        Int       @id @default(autoincrement())
-  messager  String
-  content   String
+  id         Int       @id @default(autoincrement())
+  messager   String
+  content    String
   chattingId Int?
-  chatting  Chatting? @relation(fields: [chattingId], references: [id])
+  chatting   Chatting? @relation(fields: [chattingId], references: [id])
 }
 
 // Comment Model
 model Comment {
-  id        Int       @id @default(autoincrement())
-  postId    Int
-  text      String
-  createdBy Int
-  approved  Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  likes     Json      @default("[]")
-  replies   Reply[]   @relation // Removed onDelete: Cascade from here
+  id         Int       @id @default(autoincrement())
+  postId     Int
+  text       String
+  createdBy  Int
+  approved   Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  likes      Json      @default("[]")
+  replies    Reply[]   @relation
 
-  post      Post      @relation(fields: [postId], references: [id])
-  user      User      @relation(fields: [createdBy], references: [id])
+  post       Post      @relation(fields: [postId], references: [id])
+  user       User      @relation(fields: [createdBy], references: [id])
 }
 
 model Reply {
-  id        Int       @id @default(autoincrement())
-  text      String?
-  createdAt DateTime  @default(now())
-  likes     Json      @default("[]")
-  commentId Int
-  createdBy Int
-  comment   Comment   @relation(fields: [commentId], references: [id], onDelete: Cascade) // Moved here
-  user      User      @relation(fields: [createdBy], references: [id])
+  id         Int       @id @default(autoincrement())
+  text       String?
+  createdAt  DateTime  @default(now())
+  likes      Json      @default("[]")
+  commentId  Int
+  createdBy  Int
+
+  comment    Comment   @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [createdBy], references: [id])
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
-  title     String
-  content   String
-  authorId  Int       // Reference to User (the author)
-  imageUrl  String?
-  category  String?
-  date      DateTime  @default(now())
-  comments  Comment[]
-  votes     Vote[]    // Relation to Vote
-  categories Category[] // Many-to-many relation with Category
-  author    User      @relation(fields: [authorId], references: [id]) // Relation to the User model
+  id         Int        @id @default(autoincrement())
+  title      String
+  content    String
+  authorId   Int
+  imageUrl   String?
+  category   String?
+  date       DateTime   @default(now())
+  comments   Comment[]
+  votes      Vote[]
+  categories Category[]
+
+  author     User       @relation(fields: [authorId], references: [id])
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique // Category name, should be unique
-  posts     Post[]    // Many-to-many relation with Post
-
-  // Optionally, you can add other fields like description if needed
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  posts      Post[]
 }
 
 model Vote {
-  id        Int       @id @default(autoincrement())
-  userId    Int
-  postId    Int
-  voteType  String    // upvote or downvote
-  createdAt DateTime  @default(now())
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  postId     Int
+  voteType   String
+  createdAt  DateTime  @default(now())
 
-  user      User      @relation(fields: [userId], references: [id])
-  post      Post      @relation(fields: [postId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
+  post       Post      @relation(fields: [postId], references: [id])
 }
 
+// User Model with Followers/Following Relationship
 model User {
-  id            Int          @id @default(autoincrement())
-  username      String       @unique
-  email         String       @unique
+  id            Int        @id @default(autoincrement())
+  username      String     @unique
+  email         String     @unique
   password      String
-  role          String       @default("user")
-  profilePic    String       @default("")
-  coverPic      String       @default("")
+  role          String     @default("user")
+  profilePic    String     @default("")
+  coverPic      String     @default("")
   comments      Comment[]
   replies       Reply[]
-  sentChats     Chatting[]   @relation(name: "FromUser")
-  receivedChats Chatting[]   @relation(name: "ToUser")
-  ownedFriends  UserFriend[] @relation(name: "UserToFriends")
-  friendOf      UserFriend[] @relation(name: "FriendToUsers")
-  
-  posts         Post[]       // Relation to posts
-  votes         Vote[]       // Relation to votes
+  sentChats     Chatting[] @relation(name: "FromUser")
+  receivedChats Chatting[] @relation(name: "ToUser")
+  posts         Post[]
+  votes         Vote[]
+
+  // Followers/Following Self-Relation via Follow model
+  followers     Follow[]   @relation("Followers")
+  following     Follow[]   @relation("Following")
 }
 
-// Define the enum for roles
+model Follow {
+  id           Int   @id @default(autoincrement())
+  followerId   Int
+  followingId  Int
+
+  follower     User  @relation("Following", fields: [followerId], references: [id])
+  following    User  @relation("Followers", fields: [followingId], references: [id])
+
+  @@unique([followerId, followingId]) // Prevent duplicate follows
+}
+
+// Role Enum
 enum Role {
-writer
-admin
-user
-}
-
-
-// Friends relationship (Many-to-many between Users)
-model UserFriend {
-  id        Int       @id @default(autoincrement())
-  userId    Int
-  friendId  Int
-  user      User      @relation(name: "UserToFriends", fields: [userId], references: [id])
-  friend    User      @relation(name: "FriendToUsers", fields: [friendId], references: [id])
-
-  @@unique([userId, friendId]) // Prevent duplicate friendships
+  writer
+  admin
+  user
 }
