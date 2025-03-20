@@ -1,5 +1,5 @@
-const { PrismaClient } = require('@prisma/client'); // Import Prisma Client
-const prisma = new PrismaClient(); // Initialize Prisma Client
+const { prisma } = require('@/config/dbConnect');
+
 
 const usersPostAuthenticate = async (req, res, next) => {
     try {

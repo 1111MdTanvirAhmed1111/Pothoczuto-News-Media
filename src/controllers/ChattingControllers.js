@@ -1,7 +1,6 @@
-// chatController.js (Prisma version)
-const { PrismaClient } = require('@prisma/client');
+const { prisma } = require('@/config/dbConnect');
 
-const prisma = new PrismaClient();
+
 
 // Global mapping of userId to socket.id
 const userSocketMap = {};

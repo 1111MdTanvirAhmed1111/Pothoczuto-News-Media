@@ -1,9 +1,8 @@
 // postController.js (Prisma version)
 const fs = require('fs');
 const path = require('path');
-const { PrismaClient } = require('@prisma/client');
+const { prisma } = require('@/config/dbConnect');
 
-const prisma = new PrismaClient();
 
 // Get all posts or a specific post
 async function GetPosts(req, res, next) {

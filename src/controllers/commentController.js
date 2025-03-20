@@ -1,7 +1,7 @@
 // commentController.js (Prisma version)
-const { PrismaClient } = require('@prisma/client');
+const { prisma } = require('@/config/dbConnect');
 
-const prisma = new PrismaClient();
+
 
 // Get all comments for a blog post
 const getAllComments = async (req, res) => {

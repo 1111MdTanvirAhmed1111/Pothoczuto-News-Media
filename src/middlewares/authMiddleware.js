@@ -1,9 +1,11 @@
 // authMiddleware.js (Prisma version)
 const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
+
 const bcrypt = require('bcrypt');
 
-const prisma = new PrismaClient();
+const { prisma } = require('@/config/dbConnect');
+
+
 
 const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization;

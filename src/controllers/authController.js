@@ -2,10 +2,11 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const { PrismaClient } = require('@prisma/client');
-const { validateInput } = require('@/utils/validateInput');
 
-const prisma = new PrismaClient();
+const { validateInput } = require('@/utils/validateInput');
+const { prisma } = require('@/config/dbConnect');
+
+
 
 exports.register = async (req, res) => {
   const schema = Joi.object({

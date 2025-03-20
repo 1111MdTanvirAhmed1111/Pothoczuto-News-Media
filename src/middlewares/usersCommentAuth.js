@@ -1,8 +1,7 @@
 // usersCommentAuthenticate.js (Prisma version)
-const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
+const { prisma } = require('@/config/dbConnect');
 
-const prisma = new PrismaClient();
+
 
 const usersCommentAuthenticate = async (req, res, next) => {
   try {
