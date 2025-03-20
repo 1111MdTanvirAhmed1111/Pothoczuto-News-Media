@@ -25,12 +25,12 @@ router.post('/:blogId', authMiddleware, addComment);
 // Reply to a comment
 router.post('/reply/:commentId', authMiddleware, replyToComment);
 
-
+ 
 // Edit Comment For User
-router.put('/:id',usersCommentAuthenticate, editComment)
+router.put('/:id', authMiddleware,usersCommentAuthenticate, editComment)
 
 // Delete Comment for a User
-router.delete('/:id',usersCommentAuthenticate, deleteComment)
+router.delete('/:id', authMiddleware, usersCommentAuthenticate, deleteComment)
 
 
 

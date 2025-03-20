@@ -1,8 +1,11 @@
+// authController.js (Prisma version)
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const User = require('@/models/User');
+const { PrismaClient } = require('@prisma/client');
 const { validateInput } = require('@/utils/validateInput');
+
+const prisma = new PrismaClient();
 
 exports.register = async (req, res) => {
   const schema = Joi.object({
@@ -17,14 +20,25 @@ exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    // Check if user already exists
+    const existingUser = await prisma.user.findFirst({
+      where: { email },
+    });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists.' });
     }
-const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ username, email, password: hashedPassword });
-    await user.save();
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const user = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+      },
+    });
 
     res.status(201).json({ message: 'User registered successfully.' });
   } catch (err) {
@@ -43,66 +57,72 @@ exports.login = async (req, res) => {
 
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+
+    // Find user by email
+    const user = await prisma.user.findFirst({
+      where: { email },
+    });
     if (!user) return res.status(400).json({ message: 'Invalid email or password.' });
 
+    // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
-    if (isMatch == true) {
-      
-      
+    if (isMatch) {
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: user.id, password }, // Use 'id' instead of '_id'
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
 
-      const token = jwt.sign({ id: user._id, password }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    
       res.status(200).json({ token });
-      
-     
-    }else{
-  
-      return res.status(400).json({ message: 'Invalid email or password.' })
-}
+    } else {
+      return res.status(400).json({ message: 'Invalid email or password.' });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-
-
-
 exports.getUserData = async (req, res) => {
   try {
     // Get the token from the Authorization header
     const token = req.headers.authorization;
-    
-    if (!token ) {
+
+    if (!token) {
       return res.status(401).json({ message: 'No token provided or invalid format' });
     }
-
-    // Extract the token (remove 'Bearer ' prefix)
-
 
     try {
       // Verify the token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      if(!decoded){
+      if (!decoded) {
         return res.status(401).json({ message: 'Invalid token' });
       }
+
       // Find user by id (exclude password from response)
-      const user = await User.findById(decoded.id)
- console.log(user._id)
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.id }, // Use 'id' instead of '_id'
+        select: {
+          id: true, // Explicitly select fields to exclude password
+          username: true,
+          email: true,
+          role: true,
+          profilePic: true, // Optional: include if needed
+          coverPic: true,   // Optional: include if needed
+        },
+      });
+
       if (!user) {
-        console.log(user)
         return res.status(404).json({ message: 'User not found' });
       }
 
       // Return user data
       res.status(200).json({
-       
-          _id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          // Add any other user fields you want to return
-      
+        _id: user.id, // Match Mongoose response format
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        // Add other fields if needed
       });
     } catch (err) {
       if (err.name === 'JsonWebTokenError') {
@@ -116,4 +136,4 @@ exports.getUserData = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-  };
+};

@@ -5,7 +5,7 @@ const app = express();
 const httpServer = createServer(app);
 const {socketWork} = require('@/config/socket');
 
-
+app.use(express.json());
 const io = new Server(httpServer, {
   cors: {
     // origin: ["https://pothoczuto.xyz"], // Your Next.js app URL

@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Chatting Model
+model Chatting {
+  id        Int       @id @default(autoincrement())
+  from      Int
+  to        Int
+  createdAt DateTime  @default(now())
+  messages  Message[]
+
+  fromUser  User      @relation(name: "FromUser", fields: [from], references: [id])
+  toUser    User      @relation(name: "ToUser", fields: [to], references: [id])
+}
+
+model Message {
+  id        Int       @id @default(autoincrement())
+  messager  String
+  content   String
+  chattingId Int?
+  chatting  Chatting? @relation(fields: [chattingId], references: [id])
+}
+
+// Comment Model
+model Comment {
+  id        Int       @id @default(autoincrement())
+  postId    Int
+  text      String
+  createdBy Int
+  approved  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  likes     Json      @default("[]")
+  replies   Reply[]   @relation // Removed onDelete: Cascade from here
+
+  post      Post      @relation(fields: [postId], references: [id])
+  user      User      @relation(fields: [createdBy], references: [id])
+}
+
+model Reply {
+  id        Int       @id @default(autoincrement())
+  text      String?
+  createdAt DateTime  @default(now())
+  likes     Json      @default("[]")
+  commentId Int
+  createdBy Int
+  comment   Comment   @relation(fields: [commentId], references: [id], onDelete: Cascade) // Moved here
+  user      User      @relation(fields: [createdBy], references: [id])
+}
+
+// Post Model
+model Post {
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String
+  authorId  Int       // Reference to User (the author)
+  imageUrl  String?
+  category  String?
+  date      DateTime  @default(now())
+  comments  Comment[]
+
+  author    User      @relation(fields: [authorId], references: [id]) // Relation to the User model
+}
+
+// User Model
+model User {
+  id            Int          @id @default(autoincrement())
+  username      String       @unique
+  email         String       @unique
+  password      String
+  role          String       @default("user")
+  profilePic    String       @default("")
+  coverPic      String       @default("")
+  comments      Comment[]
+  replies       Reply[]
+  sentChats     Chatting[]   @relation(name: "FromUser")
+  receivedChats Chatting[]   @relation(name: "ToUser")
+  ownedFriends  UserFriend[] @relation(name: "UserToFriends")
+  friendOf      UserFriend[] @relation(name: "FriendToUsers")
+  
+  posts         Post[]       // New relation for posts
+}
+
+// Friends relationship (Many-to-many between Users)
+model UserFriend {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  friendId  Int
+  user      User      @relation(name: "UserToFriends", fields: [userId], references: [id])
+  friend    User      @relation(name: "FriendToUsers", fields: [friendId], references: [id])
+
+  @@unique([userId, friendId]) // Prevent duplicate friendships
+}
