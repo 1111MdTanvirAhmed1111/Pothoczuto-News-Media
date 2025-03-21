@@ -78,6 +78,7 @@ model Post {
   comments   Comment[]
   votes      Vote[]
   categories Category[]
+  challenges Challenge[]
 
   author     User       @relation(fields: [authorId], references: [id])
   country    Country    @relation(fields: [countryId], references: [id])
@@ -118,6 +119,7 @@ model User {
   receivedChats Chatting[] @relation(name: "ToUser")
   posts         Post[]
   votes         Vote[]
+  challenges    Challenge[]
 
   // Followers/Following Self-Relation via Follow model
   followers     Follow[]   @relation("Followers")
@@ -135,6 +137,19 @@ model Follow {
   following    User   @relation("Followers", fields: [followingId], references: [id])
 
   @@unique([followerId, followingId]) // Prevent duplicate follows
+}
+
+model Challenge {
+  id          String   @id @default(cuid())
+  postId      String
+  userId      String
+  content     String
+  status      String   @default("active") // active, completed, rejected
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  post        Post     @relation(fields: [postId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 // Role Enum
