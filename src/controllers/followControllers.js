@@ -74,7 +74,7 @@ const unfollowUser = async (req, res) => {
 const getFollowers = async (req, res) => {
   try {
     const { userId } = req.params;
-
+console.log(userId);
     const followers = await prisma.follow.findMany({
       where: {
         followingId: parseInt(userId),

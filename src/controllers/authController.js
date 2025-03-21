@@ -100,30 +100,59 @@ exports.getUserData = async (req, res) => {
         return res.status(401).json({ message: 'Invalid token' });
       }
 
-      // Find user by id (exclude password from response)
+      // Find user by id (exclude password from response) and include followers/following
       const user = await prisma.user.findUnique({
-        where: { id: decoded.id }, // Use 'id' instead of '_id'
+        where: { id: decoded.id },
         select: {
-          id: true, // Explicitly select fields to exclude password
+          id: true,
           username: true,
           email: true,
           role: true,
-          profilePic: true, // Optional: include if needed
-          coverPic: true,   // Optional: include if needed
-        },
+          profilePic: true,
+          coverPic: true,
+          followers: {
+            select: {
+              follower: {
+                select: {
+                  id: true,
+                  username: true,
+                  profilePic: true
+                }
+              }
+            }
+          },
+          following: {
+            select: {
+              following: {
+                select: {
+                  id: true,
+                  username: true,
+                  profilePic: true
+                }
+              }
+            }
+          }
+        }
       });
 
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
 
-      // Return user data
+      // Transform followers and following data
+      const followers = user.followers.map(f => f.follower);
+      const following = user.following.map(f => f.following);
+
+      // Return user data with followers and following
       res.status(200).json({
-        _id: user.id, // Match Mongoose response format
+        _id: user.id,
         username: user.username,
         email: user.email,
         role: user.role,
-        // Add other fields if needed
+        profilePic: user.profilePic,
+        coverPic: user.coverPic,
+        followers: followers,
+        following: following
       });
     } catch (err) {
       if (err.name === 'JsonWebTokenError') {

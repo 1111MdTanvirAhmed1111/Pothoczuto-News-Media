@@ -7,18 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Country {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  code        String    @unique
-  flag        String?
-  users       User[]
-  posts       Post[]
-  votes       Vote[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
 // Chatting Model
 model Chatting {
   id        String    @id @default(cuid())
@@ -74,14 +62,12 @@ model Post {
   imageUrl   String?
   category   String?
   date       DateTime   @default(now())
-  countryId  String
   comments   Comment[]
   votes      Vote[]
   categories Category[]
   challenges Challenge[]
 
   author     User       @relation(fields: [authorId], references: [id])
-  country    Country    @relation(fields: [countryId], references: [id])
 }
 
 model Category {
@@ -96,11 +82,9 @@ model Vote {
   postId     String
   voteType   String
   createdAt  DateTime  @default(now())
-  countryId  String
 
   user       User      @relation(fields: [userId], references: [id])
   post       Post      @relation(fields: [postId], references: [id])
-  country    Country   @relation(fields: [countryId], references: [id])
 }
 
 // User Model with Followers/Following Relationship
@@ -112,7 +96,6 @@ model User {
   role          String     @default("user")
   profilePic    String     @default("")
   coverPic      String     @default("")
-  countryId     String
   comments      Comment[]
   replies       Reply[]
   sentChats     Chatting[] @relation(name: "FromUser")
@@ -124,8 +107,6 @@ model User {
   // Followers/Following Self-Relation via Follow model
   followers     Follow[]   @relation("Followers")
   following     Follow[]   @relation("Following")
-  
-  country       Country    @relation(fields: [countryId], references: [id])
 }
 
 model Follow {
