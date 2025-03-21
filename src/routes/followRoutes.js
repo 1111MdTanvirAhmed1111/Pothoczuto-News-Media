@@ -9,7 +9,7 @@ const authMiddleware  = require('@/middlewares/authMiddleware');
 const router = require('express').Router();
 
 // Follow a user
-router.post('/follow', authMiddleware, followUser);
+router.post('/follow/:followingId', authMiddleware, followUser);
 
 // Unfollow a user
 router.post('/unfollow', authMiddleware, unfollowUser);

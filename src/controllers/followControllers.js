@@ -3,8 +3,8 @@ const {prisma} = require('@/config/dbConnect');
 // Follow a user
 const followUser = async (req, res) => {
   try {
-    const { followerId, followingId } = req.body;
-
+    const {  followingId } = req.params;// which user to follow
+const followerId = req.user.id; // user who is following
     // Check if the follower is already following the user
     const existingFollow = await prisma.follow.findUnique({
       where: {
