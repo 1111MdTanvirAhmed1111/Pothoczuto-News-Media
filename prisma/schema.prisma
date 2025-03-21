@@ -144,7 +144,6 @@ model Challenge {
   postId      String
   userId      String
   content     String
-  status      String   @default("active") // active, completed, rejected
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
