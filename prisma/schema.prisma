@@ -111,8 +111,8 @@ model User {
 
 model Follow {
   id           String @id @default(cuid())
-  followerId   String
-  followingId  String
+  followerId   String // the user who is following
+  followingId  String // the user who is being followed
 
   follower     User   @relation("Following", fields: [followerId], references: [id])
   following    User   @relation("Followers", fields: [followingId], references: [id])
