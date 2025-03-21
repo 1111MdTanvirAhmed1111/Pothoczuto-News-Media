@@ -3,7 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const { prisma } = require('@/config/dbConnect');
 
-
 // Get all posts or a specific post
 async function GetPosts(req, res, next) {
   const { id } = req.query;

@@ -1,5 +1,4 @@
-const prisma = require('../prisma/client');
-
+const { prisma } = require('@/config/dbConnect');
 // Upvote a post
 const upvotePost = async (req, res) => {
   try {

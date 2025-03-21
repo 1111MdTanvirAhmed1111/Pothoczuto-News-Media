@@ -1,5 +1,4 @@
-const prisma = require('../prisma/client');
-
+const { prisma } = require('@/config/dbConnect');
 // Create a new category
 const createCategory = async (req, res) => {
   try {
