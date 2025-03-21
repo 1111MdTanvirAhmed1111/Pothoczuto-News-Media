@@ -16,10 +16,10 @@ const useRoutes = () => {
     app.use('/api/posts', blogRoutes);
     app.use('/api/comments', commentRoutes);
     app.use('/api/categories', categoryRoutes);
-    app.use('/api/challenges', challengeRoutes);
-    app.use('/api/chat', chattingRoutes);
-    app.use('/api/follow', followRoutes);
-    app.use('/api/vote', voteRoutes);
+    // app.use('/api/challenges', challengeRoutes);
+    // app.use('/api/chat', chattingRoutes);
+    // app.use('/api/follow', followRoutes);
+    // app.use('/api/vote', voteRoutes);
 
 }
 
