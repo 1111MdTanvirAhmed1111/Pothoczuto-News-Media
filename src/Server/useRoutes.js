@@ -11,6 +11,12 @@ const followRoutes = require('@/routes/followRoutes');
 const voteRoutes = require('@/routes/voteRoutes');
 
 const useRoutes = () => {
+
+    // Server Welcomer
+    app.get('/', (req, res) => {
+        res.send('Welcome to the News Media API!');  
+    })
+
     // Routes
     app.use('/api/auth', authRoutes);
     app.use('/api/posts', blogRoutes);
