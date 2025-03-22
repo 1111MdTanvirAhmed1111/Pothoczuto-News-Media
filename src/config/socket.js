@@ -35,7 +35,7 @@ const socketWork = (io) => {
               to,
               messages: {
                 create: {
-                  messager: from.toString(), // Convert to string if needed
+                  messager: from , // Convert to string if needed
                   content,
                 },
               },
@@ -45,7 +45,7 @@ const socketWork = (io) => {
           // Add a new message to the existing chat
           await prisma.message.create({
             data: {
-              messager: from.toString(), // Convert to string if needed
+              messager: from , // Convert to string if needed
               content,
               chattingId: chatting.id,
             },
