@@ -1,6 +1,4 @@
-// chatController.js (Prisma version)
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { prisma } = require('@/config/dbConnect');
 
 const socketWork = (io) => {
   io.on('connection', (socket) => {
@@ -14,7 +12,7 @@ const socketWork = (io) => {
     });
 
     // Listen for sendMessage event
-    socket.on('sendMessege', async (data) => {
+    socket.on('sendMessage', async (data) => {
       const { from, to, content } = data;
 
       try {
@@ -56,10 +54,10 @@ const socketWork = (io) => {
 
         // Emit the message to both users if they are connected
         if (users[from]) {
-          io.to(users[from]).emit('receivedMessege', { from, content });
+          io.to(users[from]).emit('receivedMessage', { from, to, content, timestamp: new Date() });
         }
         if (users[to]) {
-          io.to(users[to]).emit('receivedMessege', { from, content });
+          io.to(users[to]).emit('receivedMessage', { from, to, content, timestamp: new Date() });
         }
 
       } catch (error) {
