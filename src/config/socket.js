@@ -1,8 +1,9 @@
 const { prisma } = require('@/config/dbConnect');
 
+const users = {};
+
 const socketWork = (io) => {
   io.on('connection', (socket) => {
-    const users = {};
 
     console.log('Socket connected:', socket.id);
 
@@ -55,6 +56,7 @@ const socketWork = (io) => {
         // Emit the message to both users if they are connected
         if (users[from]) {
           io.to(users[from]).emit('receivedMessage', { from, to, content, timestamp: new Date() });
+          console.log("from", from)
         }
         if (users[to]) {
           io.to(users[to]).emit('receivedMessage', { from, to, content, timestamp: new Date() });
