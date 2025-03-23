@@ -85,29 +85,22 @@ exports.login = async (req, res) => {
 };
 
 exports.getUserData = async (req, res) => {
-  try {
+  
     // Get the token from the Authorization header
-    const token = req.headers.authorization;
-
-    if (!token) {
-      return res.status(401).json({ message: 'No token provided or invalid format' });
-    }
+ 
 
     try {
-      // Verify the token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      if (!decoded) {
-        return res.status(401).json({ message: 'Invalid token' });
-      }
+  
 
       // Find user by id (exclude password from response) and include followers/following
       const user = await prisma.user.findUnique({
-        where: { id: decoded.id },
+        where: { id: req.user.id },
         select: {
           id: true,
           username: true,
           email: true,
           role: true,
+          votes: true,
           profilePic: true,
           coverPic: true,
           followers: {
@@ -144,16 +137,7 @@ exports.getUserData = async (req, res) => {
       const following = user.following.map(f => f.following);
 
       // Return user data with followers and following
-      res.status(200).json({
-        _id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        profilePic: user.profilePic,
-        coverPic: user.coverPic,
-        followers: followers,
-        following: following
-      });
+      res.status(200).json(user);
     } catch (err) {
       if (err.name === 'JsonWebTokenError') {
         return res.status(401).json({ message: 'Invalid token' });
@@ -163,9 +147,7 @@ exports.getUserData = async (req, res) => {
       }
       throw err;
     }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+ 
 };
 
 exports.getAllUsers = async (req, res) => {

@@ -66,6 +66,7 @@ model Post {
   votes      Vote[]
   categories Category[]
   challenges Challenge[]
+  loves      PostLove[]
 
   author     User       @relation(fields: [authorId], references: [id])
 }
@@ -104,6 +105,7 @@ model User {
   votes         Vote[]
   challenges    Challenge[]
   otps          OTP[]
+  lovedPosts    PostLove[]
 
   // Followers/Following Self-Relation via Follow model
   followers     Follow[]   @relation("Followers")
@@ -144,6 +146,18 @@ model Challenge {
 }
 
 // Role Enum
+model PostLove {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
 enum Role {
   writer
   admin
