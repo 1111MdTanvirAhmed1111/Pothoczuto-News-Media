@@ -45,6 +45,7 @@ const createPost = async (req, res) => {
     if (!req.body.Pdata) {
       return res.status(400).json({ error: 'Please Provide Details' });
     }
+    
 
     const { title, content, author, category } = JSON.parse(req.body.Pdata);
     const imageUrl = req.file ? `./uploads/blogs/images/${req.file.filename}` : null; // Prisma uses null, not "null"
