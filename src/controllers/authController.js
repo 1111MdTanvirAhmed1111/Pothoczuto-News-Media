@@ -167,3 +167,191 @@ exports.getUserData = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+        
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        profilePic: true,
+        coverPic: true,
+        followers: {
+          select: {
+            follower: {
+              select: {
+                id: true,
+                username: true,
+                profilePic: true
+              }
+            }
+          }
+        },
+        following: {
+          select: {
+            following: {
+              select: {
+                id: true,
+                username: true,
+                profilePic: true
+              }
+            }
+          }
+        }
+      }
+    }); 
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message }); 
+  }
+};
+
+// Generate a random 6-digit OTP
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// Password reset request and OTP generation
+exports.forgotPassword = async (req, res) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required()
+  });
+
+  const { error } = validateInput(req.body, schema);
+  if (error) return res.status(400).json({ message: error.details[0].message });
+
+  try {
+    const { email } = req.body;
+
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+
+    // Save OTP in database
+    await prisma.oTP.create({
+      data: {
+        code: otp,
+        expiresAt,
+        userId: user.id
+      }
+    });
+
+    // Send OTP via email
+    const { sendOTPEmail } = require('@/utils/emailService');
+    const emailSent = await sendOTPEmail(email, otp);
+
+    if (!emailSent) {
+      return res.status(500).json({ message: 'Failed to send OTP email.' });
+    }
+
+    res.status(200).json({ message: 'OTP sent to your email.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Verify OTP
+exports.verifyOTP = async (req, res) => {
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    otp: Joi.string().length(6).required()
+  });
+
+  const { error } = validateInput(req.body, schema);
+  if (error) return res.status(400).json({ message: error.details[0].message });
+
+  try {
+    const { email, otp } = req.body;
+
+    // Find user
+    const user = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Find valid OTP
+    const validOTP = await prisma.oTP.findFirst({
+      where: {
+        userId: user.id,
+        code: otp,
+        isUsed: false,
+        expiresAt: {
+          gt: new Date()
+        }
+      }
+    });
+
+    if (!validOTP) {
+      return res.status(400).json({ message: 'Invalid or expired OTP.' });
+    }
+
+    // Mark OTP as used
+    await prisma.oTP.update({
+      where: { id: validOTP.id },
+      data: { isUsed: true }
+    });
+
+    // Generate temporary token for password reset
+    const resetToken = jwt.sign(
+      { id: user.id, purpose: 'password_reset' },
+      process.env.JWT_SECRET,
+      { expiresIn: '10m' }
+    );
+
+    res.status(200).json({ message: 'OTP verified successfully.', resetToken });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Reset password
+exports.resetPassword = async (req, res) => {
+  const schema = Joi.object({
+    resetToken: Joi.string().required(),
+    newPassword: Joi.string().min(6).required()
+  });
+
+  const { error } = validateInput(req.body, schema);
+  if (error) return res.status(400).json({ message: error.details[0].message });
+
+  try {
+    const { resetToken, newPassword } = req.body;
+
+    // Verify reset token
+    const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
+    if (decoded.purpose !== 'password_reset') {
+      return res.status(400).json({ message: 'Invalid reset token.' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await prisma.user.update({
+      where: { id: decoded.id },
+      data: { password: hashedPassword }
+    });
+
+    res.status(200).json({ message: 'Password reset successful.' });
+  } catch (err) {
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      return res.status(400).json({ message: 'Invalid or expired reset token.' });
+    }
+    res.status(500).json({ message: err.message });
+  }
+}

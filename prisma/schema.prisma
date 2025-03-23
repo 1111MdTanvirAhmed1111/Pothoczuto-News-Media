@@ -103,10 +103,21 @@ model User {
   posts         Post[]
   votes         Vote[]
   challenges    Challenge[]
+  otps          OTP[]
 
   // Followers/Following Self-Relation via Follow model
   followers     Follow[]   @relation("Followers")
   following     Follow[]   @relation("Following")
+}
+
+model OTP {
+  id         String    @id @default(cuid())
+  code       String
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  isUsed     Boolean   @default(false)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
 }
 
 model Follow {

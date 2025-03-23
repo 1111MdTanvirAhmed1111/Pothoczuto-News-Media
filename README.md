@@ -39,6 +39,44 @@ This documentation provides details about the available endpoints, authenticatio
 ### Get User Data
 **Endpoint:** `GET /api/auth/userdata`
 
+### Forgot Password
+**Endpoint:** `POST /api/auth/forgot-password`
+
+**Request Body:**
+```json
+{
+  "email": "string"
+}
+```
+
+**Description:** Generates and sends OTP to the user's email for password reset.
+
+### Verify OTP
+**Endpoint:** `POST /api/auth/verify-otp`
+
+**Request Body:**
+```json
+{
+  "email": "string",
+  "otp": "string"
+}
+```
+
+**Description:** Validates the OTP and returns a reset token.
+
+### Reset Password
+**Endpoint:** `POST /api/auth/reset-password`
+
+**Request Body:**
+```json
+{
+  "token": "string",
+  "newPassword": "string"
+}
+```
+
+**Description:** Resets the user's password using the valid reset token.
+
 ## Blog Posts
 
 ### Get All Posts
