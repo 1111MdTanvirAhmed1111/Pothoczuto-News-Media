@@ -90,26 +90,27 @@ model Vote {
 
 // User Model with Followers/Following Relationship
 model User {
-  id            String     @id @default(cuid())
-  username      String     @unique
-  email         String     @unique
+  id            String        @id @default(cuid())
+  username      String        @unique
+  email         String        @unique
   password      String
-  role          String     @default("user")
-  profilePic    String     @default("")
-  coverPic      String     @default("")
+  role          String        @default("user")
+  profilePic    String        @default("")
+  coverPic      String        @default("")
   comments      Comment[]
   replies       Reply[]
-  sentChats     Chatting[] @relation(name: "FromUser")
-  receivedChats Chatting[] @relation(name: "ToUser")
+  sentChats     Chatting[]    @relation(name: "FromUser")
+  receivedChats Chatting[]    @relation(name: "ToUser")
   posts         Post[]
   votes         Vote[]
   challenges    Challenge[]
   otps          OTP[]
   lovedPosts    PostLove[]
+  activityLogs  ActivityLog[] // Admin activity logs
 
   // Followers/Following Self-Relation via Follow model
-  followers     Follow[]   @relation("Followers")
-  following     Follow[]   @relation("Following")
+  followers     Follow[]      @relation("Followers")
+  following     Follow[]      @relation("Following")
 }
 
 model OTP {
@@ -162,4 +163,33 @@ enum Role {
   writer
   admin
   user
+}
+
+enum AdminAction {
+  CREATE
+  UPDATE
+  DELETE
+  APPROVE
+  REJECT
+  BAN
+  UNBAN
+  OTHER
+}
+
+model ActivityLog {
+  id          String      @id @default(cuid())
+  adminId     String
+  actionType  AdminAction
+  targetId    String
+  targetType  String      // e.g., "user", "post", "comment"
+  details     Json        // Structured data about the action
+  metadata    Json?       // Additional context information
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  admin       User        @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([actionType])
+  @@index([targetType])
 }

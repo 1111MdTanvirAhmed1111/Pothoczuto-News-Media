@@ -222,6 +222,16 @@ const approveComment = async (req, res) => {
       include: { replies: true },
     });
 
+    // Log admin activity
+    const { logAdminActivity, AdminActionTypes } = require('@/utils/adminActivityLogger');
+    await logAdminActivity({
+      adminId: req.user.id,
+      actionType: AdminActionTypes.APPROVE_COMMENT,
+      targetId: id,
+      details: `Approved comment on post ${comment.postId}`,
+      metadata: { postId: comment.postId }
+    });
+
     res.status(200).json({ message: 'Comment approved.', comment: updatedComment });
   } catch (err) {
     res.status(500).json({ message: 'Internal server error.', error: err.message });
@@ -256,6 +266,18 @@ const deleteComment = async (req, res) => {
     await prisma.comment.delete({
       where: { id: parseInt(id) },
     });
+
+    // Log admin activity if deleted by admin
+    if (req.user.role === 'admin') {
+      const { logAdminActivity, AdminActionTypes } = require('@/utils/adminActivityLogger');
+      await logAdminActivity({
+        adminId: req.user.id,
+        actionType: AdminActionTypes.DELETE_COMMENT,
+        targetId: id,
+        details: `Deleted comment from post ${comment.postId}`,
+        metadata: { postId: comment.postId }
+      });
+    }
 
     res.status(200).json({ message: 'Comment deleted successfully.' });
   } catch (err) {

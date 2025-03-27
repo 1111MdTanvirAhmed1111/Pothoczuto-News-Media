@@ -10,6 +10,7 @@ const chattingRoutes = require('@/routes/chattingRoutes');
 const followRoutes = require('@/routes/followRoutes');
 const voteRoutes = require('@/routes/voteRoutes');
 const passwordResetRoutes = require('@/routes/passwordResetRoutes');
+const activityRoutes = require('@/routes/activityRoutes');
 
 const useRoutes = () => {
 
@@ -28,6 +29,7 @@ const useRoutes = () => {
     app.use('/api/follow', followRoutes);
     app.use('/api/vote', voteRoutes);
     app.use('/api/auth' , passwordResetRoutes);
+    app.use('/api/activity', activityRoutes);
 
 }
 
