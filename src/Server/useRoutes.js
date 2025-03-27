@@ -10,7 +10,7 @@ const chattingRoutes = require('@/routes/chattingRoutes');
 const followRoutes = require('@/routes/followRoutes');
 const voteRoutes = require('@/routes/voteRoutes');
 const passwordResetRoutes = require('@/routes/passwordResetRoutes');
-const activityRoutes = require('@/routes/activityRoutes');
+const activityRoutes = require('@/routes/activityLogRoutes');
 
 const useRoutes = () => {
 
