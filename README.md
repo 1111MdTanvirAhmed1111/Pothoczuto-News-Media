@@ -5,15 +5,15 @@
 This comprehensive documentation 📚 provides detailed insights about our powerful API endpoints 🔌, robust authentication system 🔐, and practical usage examples 💡 to help you integrate and leverage our platform effectively.
 
 ## 📑 Table of Contents
-- [Authentication](#authentication) 🔐
-- [Blog Posts](#blog-posts) 📝
-- [Comments](#comments) 💬
-- [Follow System](#follow-system) 👥
-- [Categories](#categories) 📁
-- [Voting](#voting) 👍
-- [Activity Logging](#activity-logging) 📊
-- [Challenge System](#challenge-system) 🏆
-- [Chat System](#chat-system) 💭
+- [Authentication](#-authentication) 🔐
+- [Blog Posts](#-blog-posts) 📝
+- [Comments](#-comments) 💬
+- [Follow System](#-follow-system) 👥
+- [Categories](#-categories) 📁
+- [Voting](#-voting) 👍
+- [Activity Logging](#-activity-logging) 📊
+- [Challenge System](#-challenge-system) 🏆
+- [Chat System](#-chat-system) 💭
 
 ## 🔐 Authentication
 
