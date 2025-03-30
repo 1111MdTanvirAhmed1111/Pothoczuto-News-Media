@@ -251,6 +251,62 @@ This documentation provides details about the available endpoints, authenticatio
 **Parameters:**
 - `postId`: Post ID
 
+## Activity Logging
+
+### Get Activity Logs
+**Endpoint:** `GET /api/activity-logs`
+
+**Authentication:** Required (Admin role)
+
+**Query Parameters:**
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 10)
+- `actionType`: Filter by action type (e.g., 'APPROVE_COMMENT', 'DELETE_POST')
+- `targetType`: Filter by target type (e.g., 'user', 'post', 'comment')
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "activityLogs": [
+      {
+        "id": "string",
+        "adminId": "string",
+        "actionType": "string",
+        "targetId": "string",
+        "targetType": "string",
+        "details": "object",
+        "metadata": "object",
+        "createdAt": "string",
+        "admin": {
+          "id": "string",
+          "username": "string",
+          "email": "string",
+          "role": "string"
+        }
+      }
+    ],
+    "pagination": {
+      "currentPage": 1,
+      "totalPages": 5,
+      "totalItems": 50,
+      "itemsPerPage": 10,
+      "hasNextPage": true,
+      "hasPrevPage": false
+    }
+  }
+}
+```
+
+**Available Action Types:**
+- `APPROVE_COMMENT`: Admin approves a comment
+- `DELETE_COMMENT`: Admin deletes a comment
+- `DELETE_POST`: Admin deletes a post
+- `UPDATE_POST`: Admin updates a post
+- `BAN_USER`: Admin bans a user
+- `UNBAN_USER`: Admin unbans a user
+
 ## Chat System
 
 ### Get Chat Messages
