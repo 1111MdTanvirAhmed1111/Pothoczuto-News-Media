@@ -18,13 +18,15 @@ const authMiddleware = async (req, res, next) => {
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Decoded token:', decoded);
+
 
     // Find user by ID
     const user = await prisma.user.findUnique({
       where: { id: decoded.id }, // Prisma uses 'id' instead of '_id'
     });
-
+console.log(user, decoded.id)
+    // Check if user exists
+    // Note: This is a basic check. You might want to add more checks based on your application's requirements, such as checking if the user is still active, etc.
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }

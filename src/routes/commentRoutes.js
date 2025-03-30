@@ -41,7 +41,7 @@ router.delete('/:id', authMiddleware, usersCommentAuthenticate, deleteComment)
 // Approve a comment 
 router.put('/:id/approve', authMiddleware, roleMiddleware('admin'), approveComment);
 // Delete a comment
-router.delete('/:id', authMiddleware, roleMiddleware('admin'), deleteComment);
+router.delete('/admin/:id', authMiddleware, roleMiddleware('admin'), deleteComment);
 
 
 

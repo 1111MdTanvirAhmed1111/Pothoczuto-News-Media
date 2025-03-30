@@ -47,22 +47,19 @@ const createPost = async (req, res) => {
     }
     
 
-    const { title, content, author, category } = JSON.parse(req.body.Pdata);
+    const { title, content, category } = JSON.parse(req.body.Pdata);
     const imageUrl = req.file ? `./uploads/blogs/images/${req.file.filename}` : null; // Prisma uses null, not "null"
 
     const post = await prisma.post.create({
       data: {
         title,
         content,
-        author,
+        authorId: req.user.id, // Use the authenticated user's ID
         category,
         imageUrl,
       },
     });
 
-    // Emit new post event to all connected clients
-    const io = req.app.get('io');
-    io.emit('new_post', post);
 
     res.status(200).json(post);
   } catch (error) {
@@ -162,9 +159,7 @@ async function deletePost(req, res) {
       where: { id: parseInt(id) },
     });
 
-    // Emit delete event to all clients
-    const io = req.app.get('io');
-    io.emit('post_deleted', id);
+ 
 
     res.status(200).json({ message: 'Post deleted successfully', post });
   } catch (error) {

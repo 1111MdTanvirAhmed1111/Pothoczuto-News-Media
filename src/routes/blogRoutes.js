@@ -19,8 +19,8 @@ router.put('/:id'  ,authMiddleware,roleMiddleware('writer'), usersPostAuthentica
 
 //Admin MasterClass Routes
 
-router.delete('/:id' ,authMiddleware ,roleMiddleware('admin'), deletePost)
-router.put('/:id'  ,authMiddleware,roleMiddleware('admin'),uploadSingle('PostImg'), updatePost)
+router.delete('/admin/:id' ,authMiddleware ,roleMiddleware('admin'), deletePost)
+router.put('/admin/:id'  ,authMiddleware,roleMiddleware('admin'),uploadSingle('PostImg'), updatePost)
 
 
 module.exports = router;
