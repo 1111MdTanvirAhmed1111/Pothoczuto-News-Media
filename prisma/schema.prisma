@@ -87,14 +87,18 @@ model Vote {
   user       User      @relation(fields: [userId], references: [id])
   post       Post      @relation(fields: [postId], references: [id])
 }
-
+enum Role {
+  writer
+  admin
+  user
+}
 // User Model with Followers/Following Relationship
 model User {
   id            String        @id @default(cuid())
   username      String        @unique
   email         String        @unique
   password      String
-  role          Role         @default(user)
+  role           Role         @default(user) // Ensure it's correctly defined
   profilePic    String        @default("")
   coverPic      String        @default("")
   comments      Comment[]
@@ -159,11 +163,7 @@ model PostLove {
   @@unique([userId, postId])
 }
 
-enum Role {
-  writer
-  admin
-  user
-}
+
 
 enum AdminAction {
   CREATE
