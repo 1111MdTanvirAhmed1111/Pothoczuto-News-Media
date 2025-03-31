@@ -285,11 +285,59 @@ const deleteComment = async (req, res) => {
   }
 };
 
+// Disapprove a comment
+const disapproveComment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate inputs
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: 'Invalid or missing comment ID.' });
+    }
+    if (!req.user || !req.user.role) {
+      return res.status(401).json({ message: 'User not authenticated.' });
+    }
+
+    // Check if comment exists
+    const comment = await prisma.comment.findUnique({
+      where: { id: parseInt(id) },
+    });
+    if (!comment) return res.status(404).json({ message: 'Comment not found.' });
+
+    // Authorization check (assuming only admins can disapprove)
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Unauthorized to disapprove comments.' });
+    }
+
+    // Update comment
+    const updatedComment = await prisma.comment.update({
+      where: { id: parseInt(id) },
+      data: { approved: false },
+      include: { replies: true },
+    });
+
+    // Log admin activity
+    const { logAdminActivity, AdminActionTypes } = require('@/utils/adminActivityLogger');
+    await logAdminActivity({
+      adminId: req.user.id,
+      actionType: AdminActionTypes.DISAPPROVE_COMMENT,
+      targetId: id,
+      details: `Disapproved comment on post ${comment.postId}`,
+      metadata: { postId: comment.postId }
+    });
+
+    res.status(200).json({ message: 'Comment disapproved.', comment: updatedComment });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error.', error: err.message });
+  }
+};
+
 module.exports = {
   editReply,
   addComment,
   replyToComment,
   approveComment,
+  disapproveComment,
   deleteComment,
   editComment,
   getAllComments,

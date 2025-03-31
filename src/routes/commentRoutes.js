@@ -3,6 +3,7 @@ const {
   addComment,
   replyToComment,
   approveComment,
+  disapproveComment,
   deleteComment,
   editComment,
 } = require('@/controllers/commentController');
@@ -40,6 +41,8 @@ router.delete('/:id', authMiddleware, usersCommentAuthenticate, deleteComment)
 
 // Approve a comment 
 router.put('/:id/approve', authMiddleware, roleMiddleware('admin'), approveComment);
+// Disapprove a comment
+router.put('/:id/disapprove', authMiddleware, roleMiddleware('admin'), disapproveComment);
 // Delete a comment
 router.delete('/admin/:id', authMiddleware, roleMiddleware('admin'), deleteComment);
 
