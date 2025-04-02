@@ -43,6 +43,15 @@ This comprehensive documentation 📚 provides detailed insights about our power
 ### Get User Data
 **Endpoint:** `GET /api/auth/userdata`
 
+**Authentication:** Required
+
+### Get All Users
+**Endpoint:** `GET /api/auth/getAllUsers`
+
+**Authentication:** Required (Admin role)
+
+**Description:** Retrieves a list of all registered users. Only accessible by administrators.
+
 ### Forgot Password
 **Endpoint:** `POST /api/auth/forgot-password`
 
@@ -88,6 +97,24 @@ This comprehensive documentation 📚 provides detailed insights about our power
 
 **Description:** Retrieves all blog posts. This endpoint is publicly accessible.
 
+**Response:** Returns an array of blog posts with their associated metadata, including:
+- Post ID
+- Title
+- Content
+- Author information
+- Category
+- Creation date
+- Image URL (if available)
+- Vote count
+
+### Get Blog Summary
+**Endpoint:** `GET /api/posts/summerize/:id`
+
+**Description:** Generates an AI-powered summary of the blog post using Gemini.
+
+**Parameters:**
+- `id`: Blog post ID
+
 ### Create a New Post
 **Endpoint:** `POST /api/posts`
 
@@ -129,6 +156,8 @@ This comprehensive documentation 📚 provides detailed insights about our power
 **Parameters:**
 - `blogId`: Blog post ID
 
+**Description:** Retrieves all comments for a specific blog post, including replies.
+
 ### Add a Comment
 **Endpoint:** `POST /api/comments/:blogId`
 
@@ -143,6 +172,8 @@ This comprehensive documentation 📚 provides detailed insights about our power
   "content": "string"
 }
 ```
+
+**Description:** Adds a new comment to a blog post. Comments require approval before being publicly visible.
 
 ### Reply to a Comment
 **Endpoint:** `POST /api/comments/reply/:commentId`
@@ -184,6 +215,14 @@ This comprehensive documentation 📚 provides detailed insights about our power
 
 ### Approve a Comment
 **Endpoint:** `PUT /api/comments/:id/approve`
+
+**Authentication:** Required (Admin role)
+
+**Parameters:**
+- `id`: Comment ID
+
+### Disapprove a Comment
+**Endpoint:** `PUT /api/comments/:id/disapprove`
 
 **Authentication:** Required (Admin role)
 
@@ -232,8 +271,11 @@ This comprehensive documentation 📚 provides detailed insights about our power
 
 ## 📁 Categories
 
+### Get All Categories
+**Endpoint:** `GET /api/category`
+
 ### Create Category
-**Endpoint:** `POST /api/category/:id`
+**Endpoint:** `POST /api/category`
 
 **Authentication:** Required (Admin role)
 
@@ -255,28 +297,20 @@ This comprehensive documentation 📚 provides detailed insights about our power
 ## 👍 Voting
 
 ### Upvote a Post
-**Endpoint:** `POST /api/vote/upvote`
+**Endpoint:** `POST /api/vote/upvote/:postId`
 
 **Authentication:** Required
 
-**Request Body:**
-```json
-{
-  "postId": "string"
-}
-```
+**Parameters:**
+- `postId`: Post ID
 
 ### Downvote a Post
-**Endpoint:** `POST /api/vote/downvote`
+**Endpoint:** `POST /api/vote/downvote/:postId`
 
 **Authentication:** Required
 
-**Request Body:**
-```json
-{
-  "postId": "string"
-}
-```
+**Parameters:**
+- `postId`: Post ID
 
 ### Get Post Votes
 **Endpoint:** `GET /api/vote/votes/:postId`
@@ -343,16 +377,14 @@ This comprehensive documentation 📚 provides detailed insights about our power
 ## 🏆 Challenge System
 
 ### Create a Challenge
-**Endpoint:** `POST /api/challenges/post/:id`
+**Endpoint:** `POST /api/challenges`
 
 **Authentication:** Required
-
-**Parameters:**
-- `id`: Post ID
 
 **Request Body:**
 ```json
 {
+  "postId": "string",
   "content": "string"
 }
 ```
