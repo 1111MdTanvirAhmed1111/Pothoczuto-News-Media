@@ -1,7 +1,7 @@
 const express = require('express');
 const authMiddleware = require('@/middlewares/authMiddleware');
 const roleMiddleware = require('@/middlewares/roleMiddleware');
-const { createPost, GetPosts, deletePost, updatePost } = require('@/controllers/blogController');
+const { createPost, GetPosts, deletePost, updatePost, blogSummerizerGemini } = require('@/controllers/blogController');
 const { uploadSingle } = require('@/middlewares/multer');
 const usersPostAuthenticate = require('@/middlewares/usersPostAuthenticate');
 
@@ -10,6 +10,7 @@ const router = express.Router();
 // Full Non Restricted ROutes
 
 router.get('/',GetPosts)
+router.get('/summerize/:id', blogSummerizerGemini)
 
 // Intermediate Routes
 router.post('/' , authMiddleware, roleMiddleware('writer'), uploadSingle('PostImg'),createPost)

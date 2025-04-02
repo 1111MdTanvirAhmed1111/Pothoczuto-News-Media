@@ -2,6 +2,8 @@
 const fs = require('fs');
 const path = require('path');
 const { prisma } = require('@/config/dbConnect');
+const { default: axios } = require('axios');
+const { SendToGemini } = require('@/utils/Gemini');
 
 // Get all posts or a specific post
 async function GetPosts(req, res, next) {
@@ -168,4 +170,26 @@ async function deletePost(req, res) {
   }
 }
 
-module.exports = { GetPosts, createPost, updatePost, deletePost };
+async function blogSummerizerGemini(req, res) {
+  try {
+   const {id}  = req.params
+   const post = await prisma.post.findFirst(
+    {
+      where: {
+        id: id
+      }
+    }
+   )  
+
+const gemini = await SendToGemini(post.content)
+
+
+res.status(200).json({ text: gemini.candidates[0].content.parts[0].text })
+
+}catch(error) {
+  console.log(error)
+  res.status(500).json({error: error})
+}
+}
+
+module.exports = { GetPosts, createPost, updatePost, deletePost, blogSummerizerGemini };
