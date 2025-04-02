@@ -1,4 +1,5 @@
 const SendToGemini = async (text) => {
+  console.log(`Sending to Gemini... ${text}`)
     const response = await fetch(process.env.GEMINI_API_URL, {
         method: 'POST',
         headers: {
