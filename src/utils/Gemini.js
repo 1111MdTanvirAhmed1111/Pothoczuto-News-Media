@@ -11,7 +11,7 @@ const SendToGemini = async (text) => {
             {
               "parts": [
                 {
-                  "text": `Heyy!! summerize the blog in short and crisp. Here is the blog: ${text}`
+                  "text": `how are youu geminiii`
                 }
               ]
             }
