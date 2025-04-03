@@ -36,9 +36,7 @@ const addComment = async (req, res) => {
     if (!text) {
       return res.status(400).json({ message: 'Text is required.' });
     }
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: 'User not authenticated.' });
-    }
+   
 
     const comment = await prisma.comment.create({
       data: {
@@ -66,9 +64,7 @@ const replyToComment = async (req, res) => {
     if (!text) {
       return res.status(400).json({ message: 'Text is required.' });
     }
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: 'User not authenticated.' });
-    }
+
 
     // Check if comment exists
     const comment = await prisma.comment.findUnique({
@@ -110,9 +106,7 @@ const editReply = async (req, res) => {
     if (!text) {
       return res.status(400).json({ message: 'Text is required.' });
     }
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: 'User not authenticated.' });
-    }
+
 
     // Check if comment exists
     const comment = await prisma.comment.findUnique({
@@ -163,9 +157,7 @@ const editComment = async (req, res) => {
     if (!text) {
       return res.status(400).json({ message: 'Text is required.' });
     }
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: 'User not authenticated.' });
-    }
+  
 
     // Check if comment exists
     const comment = await prisma.comment.findUnique({
@@ -247,9 +239,7 @@ const deleteComment = async (req, res) => {
     if (!id || isNaN(parseInt(id))) {
       return res.status(400).json({ message: 'Invalid or missing comment ID.' });
     }
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: 'User not authenticated.' });
-    }
+
 
     // Check if comment exists
     const comment = await prisma.comment.findUnique({

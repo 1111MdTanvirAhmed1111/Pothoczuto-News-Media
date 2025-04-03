@@ -1,25 +1,32 @@
+const axios = require('axios');
+
 const SendToGemini = async (text) => {
   console.log(`Sending to Gemini... ${text}`)
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
-        method: 'POST',
+  try {
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        contents: [
+          {
+            parts: [
+              {
+                text:  text
+              }
+            ]
+          }
+        ]
+      },
+      {
         headers: {
-          'Content-Type': 'application/json',
-         
-        },
-        body: JSON.stringify({
-          "contents": [
-            {
-              "parts": [
-                {
-                  "text": `Heyy!! summerize the blog in short and crisp. Here is the blog: ${text}`
-                }
-              ]
-            }
-          ]
-        })
-      })
-      const gemini = await response.json()
-      return gemini
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error calling Gemini API:', error.message);
+    throw error;
+  }
 }
 
 module.exports = {

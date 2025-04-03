@@ -190,6 +190,175 @@ This comprehensive documentation 📚 provides detailed insights about our power
 **Parameters:**
 - `id`: Comment ID
 
+## 🔔 Notifications
+
+### Get User Notifications
+**Endpoint:** `GET /api/notifications`
+
+**Authentication:** Required
+
+**Query Parameters:**
+```json
+{
+  "page": "number (optional, default: 1)",
+  "limit": "number (optional, default: 10)"
+}
+```
+
+**Description:** Retrieves paginated notifications for the authenticated user and updates the last notification viewed timestamp.
+
+### Get Notification Summary
+**Endpoint:** `GET /api/notifications/summary`
+
+**Authentication:** Required
+
+**Description:** Provides an AI-powered summary of unread notifications using Gemini AI.
+
+## 🤖 AI Features
+
+### Blog Summarization
+**Endpoint:** `GET /api/posts/summarize/:id`
+
+**Authentication:** Required
+
+**Parameters:**
+- `id`: Blog post ID
+
+**Description:** Generates a concise summary of the blog post using Gemini AI.
+
+## 💭 Chat System
+
+### Get Chat History
+**Endpoint:** `POST /api/chat/get-chatting`
+
+**Authentication:** Required
+
+**Request Body:**
+```json
+{
+  "from": "number (user ID)",
+  "to": "number (recipient ID)"
+}
+```
+
+**Description:** Retrieves chat history between two users.
+
+### Get Chat List
+**Endpoint:** `POST /api/chat/chat-list`
+
+**Authentication:** Required
+
+**Request Body:**
+```json
+{
+  "from": "number (user ID)"
+}
+```
+
+**Description:** Retrieves all chat conversations for a user.
+
+## 📊 Activity Logging
+
+### Get Admin Activity Logs
+**Endpoint:** `GET /api/activity-logs`
+
+**Authentication:** Required (Admin role)
+
+**Description:** Retrieves logs of administrative actions performed on the platform.
+
+## 👥 Follow System
+
+### Follow a User
+**Endpoint:** `POST /api/follow/:followingId`
+
+**Authentication:** Required
+
+**Parameters:**
+- `followingId`: ID of the user to follow
+
+### Unfollow a User
+**Endpoint:** `POST /api/follow/unfollow`
+
+**Authentication:** Required
+
+**Request Body:**
+```json
+{
+  "followerId": "number",
+  "followingId": "number"
+}
+```
+
+### Get User's Followers
+**Endpoint:** `GET /api/follow/followers/:userId`
+
+**Parameters:**
+- `userId`: User ID
+
+### Get User's Following
+**Endpoint:** `GET /api/follow/following/:userId`
+
+**Parameters:**
+- `userId`: User ID
+
+## 👍 Voting System
+
+### Vote on a Post
+**Endpoint:** `POST /api/votes/vote`
+
+**Authentication:** Required
+
+**Request Body:**
+```json
+{
+  "postId": "number",
+  "voteType": "string (upvote/downvote)"
+}
+```
+
+## 🏆 Challenge System
+
+### Create a Challenge
+**Endpoint:** `POST /api/challenges`
+
+**Authentication:** Required (Admin role)
+
+**Request Body:**
+```json
+{
+  "title": "string",
+  "description": "string",
+  "startDate": "date",
+  "endDate": "date",
+  "reward": "string"
+}
+```
+
+### Get All Challenges
+**Endpoint:** `GET /api/challenges`
+
+### Get Challenge by ID
+**Endpoint:** `GET /api/challenges/:id`
+
+**Parameters:**
+- `id`: Challenge ID
+
+### Submit Challenge Entry
+**Endpoint:** `POST /api/challenges/:id/submit`
+
+**Authentication:** Required
+
+**Parameters:**
+- `id`: Challenge ID
+
+**Request Body:**
+```json
+{
+  "content": "string",
+  "attachments": "array (optional)"
+}
+```
+
 ## 👥 Follow System
 
 ### Follow a User

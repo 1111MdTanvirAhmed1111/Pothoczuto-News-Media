@@ -54,6 +54,11 @@ model Reply {
   user       User      @relation(fields: [createdBy], references: [id])
 }
 
+enum PostStatus {
+  APPROVED
+  UNAPPROVED
+}
+
 model Post {
   id         String     @id @default(cuid())
   title      String
@@ -62,6 +67,7 @@ model Post {
   imageUrl   String?
   category   String?
   date       DateTime   @default(now())
+  status     PostStatus @default(APPROVED)
   comments   Comment[]
   votes      Vote[]
   categories Category[]
@@ -92,29 +98,55 @@ enum Role {
   admin
   user
 }
-// User Model with Followers/Following Relationship
-model User {
-  id            String        @id @default(cuid())
-  username      String        @unique
-  email         String        @unique
-  password      String
-  role           Role         @default(user) // Ensure it's correctly defined
-  profilePic    String        @default("")
-  coverPic      String        @default("")
-  comments      Comment[]
-  replies       Reply[]
-  sentChats     Chatting[]    @relation(name: "FromUser")
-  receivedChats Chatting[]    @relation(name: "ToUser")
-  posts         Post[]
-  votes         Vote[]
-  challenges    Challenge[]
-  otps          OTP[]
-  lovedPosts    PostLove[]
-  activityLogs  ActivityLog[] // Admin activity logs
+// Notification Model
+model Notification {
+  id           String         @id @default(cuid())
+  userId       String         // User receiving the notification
+  type         NotificationType // Type of notification (COMMENT, LIKE, NEW_POST)
+  relatedId    String         // ID of the related entity (comment, post, etc.)
+  relatedType  String         // Type of related entity ("Comment", "Post", etc.)
+  message      String         // Notification message
+  isRead       Boolean        @default(false)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
-  // Followers/Following Self-Relation via Follow model
-  followers     Follow[]      @relation("Followers")
-  following     Follow[]      @relation("Following")
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([isRead])
+}
+
+// Notification Type Enum
+enum NotificationType {
+  COMMENT        // When someone comments on user's post
+  LIKE           // When someone likes user's post/comment
+  NEW_POST       // When a followed user creates a new post
+}
+
+// Updated User Model with lastNotificationViewedAt
+model User {
+  id                    String          @id @default(cuid())
+  username              String          @unique
+  email                 String          @unique
+  password              String
+  role                  Role            @default(user)
+  profilePic            String          @default("")
+  coverPic              String          @default("")
+  lastNotificationViewedAt DateTime?    // New field to track last notification view
+  comments              Comment[]
+  replies               Reply[]
+  sentChats             Chatting[]      @relation(name: "FromUser")
+  receivedChats         Chatting[]      @relation(name: "ToUser")
+  posts                 Post[]
+  votes                 Vote[]
+  challenges            Challenge[]
+  otps                  OTP[]
+  lovedPosts            PostLove[]
+  activityLogs          ActivityLog[]
+  notifications         Notification[]  // Notifications relation
+  followers             Follow[]        @relation("Followers")
+  following             Follow[]        @relation("Following")
 }
 
 model OTP {

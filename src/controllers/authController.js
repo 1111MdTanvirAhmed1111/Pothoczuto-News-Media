@@ -302,6 +302,8 @@ exports.verifyOTP = async (req, res) => {
 };
 
 // Reset password
+
+
 exports.resetPassword = async (req, res) => {
   const schema = Joi.object({
     resetToken: Joi.string().required(),

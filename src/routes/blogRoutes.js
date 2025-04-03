@@ -1,7 +1,7 @@
 const express = require('express');
 const authMiddleware = require('@/middlewares/authMiddleware');
 const roleMiddleware = require('@/middlewares/roleMiddleware');
-const { createPost, GetPosts, deletePost, updatePost, blogSummerizerGemini } = require('@/controllers/blogController');
+const { createPost, GetPosts, deletePost, updatePost, blogSummerizerGemini, approvePost, disapprovePost } = require('@/controllers/blogController');
 const { uploadSingle } = require('@/middlewares/multer');
 const usersPostAuthenticate = require('@/middlewares/usersPostAuthenticate');
 
@@ -20,8 +20,11 @@ router.put('/:id'  ,authMiddleware,roleMiddleware('writer'), usersPostAuthentica
 
 //Admin MasterClass Routes
 
-router.delete('/admin/:id' ,authMiddleware ,roleMiddleware('admin'), deletePost)
-router.put('/admin/:id'  ,authMiddleware,roleMiddleware('admin'),uploadSingle('PostImg'), updatePost)
+router.delete('/admin/:id', authMiddleware, roleMiddleware('admin'), deletePost)
+// router.put('/admin/:id', authMiddleware, roleMiddleware('admin'), uploadSingle('PostImg'), updatePost)
 
+// Post Approval Routes
+router.put('/admin/approve/:id', authMiddleware, roleMiddleware('admin'), approvePost)
+router.put('/admin/disapprove/:id', authMiddleware, roleMiddleware('admin'), disapprovePost)
 
 module.exports = router;

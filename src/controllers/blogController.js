@@ -4,6 +4,7 @@ const path = require('path');
 const { prisma } = require('@/config/dbConnect');
 const { default: axios } = require('axios');
 const { SendToGemini } = require('@/utils/Gemini');
+const { logAdminActivity } = require('@/utils/Functionalities/adminActivityLogger');
 
 // Get all posts or a specific post
 async function GetPosts(req, res, next) {
@@ -133,6 +134,10 @@ async function deletePost(req, res) {
   const { id } = req.params;
 
   try {
+
+
+    logAdminActivity(req.user.id, 'Deleted', 'Post', id)
+
     const post = await prisma.post.findUnique({
       where: { id: parseInt(id) }, // Convert to Int
     });
@@ -181,7 +186,7 @@ async function blogSummerizerGemini(req, res) {
     }
    )  
 
-const gemini = await SendToGemini(post.content)
+const gemini = await SendToGemini(`Heyy!! summerize the blog in short and crisp. Here is the blog:${post.content}`)
 
 
 res.status(200).json({ text: gemini.candidates[0].content.parts[0].text })
@@ -192,4 +197,64 @@ res.status(200).json({ text: gemini.candidates[0].content.parts[0].text })
 }
 }
 
-module.exports = { GetPosts, createPost, updatePost, deletePost, blogSummerizerGemini };
+// Approve a post
+async function approvePost(req, res) {
+  const { id } = req.params;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    const updatedPost = await prisma.post.update({
+      where: { id },
+      data: {
+        status: 'APPROVED'
+      },
+    });
+
+    // Log admin activity
+    await logAdminActivity(req.user.id, 'APPROVE', 'Post', id);
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error('Approve post error:', error);
+    res.status(500).json({ error: 'Failed to approve post' });
+  }
+}
+
+// Disapprove a post
+async function disapprovePost(req, res) {
+  const { id } = req.params;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    const updatedPost = await prisma.post.update({
+      where: { id },
+      data: {
+        status: 'UNAPPROVED'
+      },
+    });
+
+    // Log admin activity
+    await logAdminActivity(req.user.id, 'REJECT', 'Post', id);
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error('Disapprove post error:', error);
+    res.status(500).json({ error: 'Failed to disapprove post' });
+  }
+}
+
+module.exports = { GetPosts, createPost, updatePost, deletePost, blogSummerizerGemini, approvePost, disapprovePost };
