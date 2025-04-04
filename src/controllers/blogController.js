@@ -7,10 +7,9 @@ const { SendToGemini } = require('@/utils/Gemini');
 const { logAdminActivity } = require('@/utils/Functionalities/adminActivityLogger');
 
 // Get all posts or a specific post
+
 async function GetPosts(req, res, next) {
-  const { id } = req.query;
-  const { limit, page } = req.query;
-  console.log(req.body)
+  const { id, limit, page } = req.query;
 
   // Parse the limit and page query parameters
   const limitValue = parseInt(limit) || 10; // Default limit to 10 posts
@@ -19,28 +18,89 @@ async function GetPosts(req, res, next) {
 
   try {
     if (id) {
-      // If an ID is provided, try to find the post by ID
+      // Fetch a single post by ID including all relations
       const post = await prisma.post.findUnique({
-        where: { id: parseInt(id) }, // Convert to Int
+        where: { id },
+        include: {
+          author: true,       // Include the post's author details
+          comments: {
+            include: {
+              user: true,      // Include the user who created the comment
+              replies: {
+                include: {
+                  user: true,  // Include users who replied to the comment
+                },
+              },
+            },
+          },
+          votes: {
+            include: {
+              user: true,      // Include users who voted
+            },
+          },
+          loves: {
+            include: {
+              user: true,      // Include users who loved the post
+            },
+          },
+          categories: true,    // Include associated categories
+          challenges: {
+            include: {
+              user: true,      // Include users who created challenges
+            },
+          },
+        },
       });
+
       if (post) {
         return res.status(200).json(post);
       } else {
-        return res.status(404).json({ title: 'Post Not Found' });
+        return res.status(404).json({ message: 'Post Not Found' });
       }
     } else {
-      // If no ID, apply pagination logic
+      // Fetch multiple posts with pagination and include relations
       const posts = await prisma.post.findMany({
         skip: skipValue,
         take: limitValue,
+        include: {
+          author: true,
+          comments: {
+            include: {
+              user: true,
+              replies: {
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+          votes: {
+            include: {
+              user: true,
+            },
+          },
+          loves: {
+            include: {
+              user: true,
+            },
+          },
+          categories: true,
+          challenges: {
+            include: {
+              user: true,
+            },
+          },
+        },
       });
+
       return res.status(200).json(posts);
     }
   } catch (error) {
-    req.error = error;
+    console.error(error);
     next(error);
   }
 }
+
 
 // Create a new post
 const createPost = async (req, res) => {

@@ -11,6 +11,7 @@ const followRoutes = require('@/routes/followRoutes');
 const voteRoutes = require('@/routes/voteRoutes');
 const passwordResetRoutes = require('@/routes/passwordResetRoutes');
 const activityRoutes = require('@/routes/activityLogRoutes');
+const PostLoveRoutes = require('@/routes/postLoveRoutes');
 
 const useRoutes = () => {
 
@@ -30,6 +31,7 @@ const useRoutes = () => {
     app.use('/api/vote', voteRoutes);
     app.use('/api/auth' , passwordResetRoutes);
     app.use('/api/activity', activityRoutes);
+    app.use('/api/postLove', PostLoveRoutes);
 
 }
 
