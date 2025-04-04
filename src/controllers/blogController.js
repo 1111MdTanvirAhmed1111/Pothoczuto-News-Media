@@ -7,7 +7,6 @@ const { SendToGemini } = require('@/utils/Gemini');
 const { logAdminActivity } = require('@/utils/Functionalities/adminActivityLogger');
 
 // Get all posts or a specific post
-
 async function GetPosts(req, res, next) {
   const { id, limit, page } = req.query;
 
