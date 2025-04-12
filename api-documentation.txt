@@ -1,0 +1,347 @@
+# 📰 Pothoczuto News Media API Documentation 🌐
+
+## Base URL
+The base URL for all API endpoints is: `/api`
+
+## Authentication Endpoints
+Base path: `/api/auth`
+
+### Register a New User
+- **Endpoint:** `POST /api/auth/register`
+- **Description:** Register a new user account
+- **Request Body:**
+  ```json
+  {
+    "username": "string",
+    "email": "string",
+    "password": "string"
+  }
+  ```
+- **Response:** User data with JWT token
+
+### Login
+- **Endpoint:** `POST /api/auth/login`
+- **Description:** Authenticate a user and get JWT token
+- **Request Body:**
+  ```json
+  {
+    "email": "string",
+    "password": "string"
+  }
+  ```
+- **Response:** User data with JWT token
+
+### Get User Data
+- **Endpoint:** `GET /api/auth/userdata`
+- **Description:** Get authenticated user's data
+- **Authentication:** Required
+- **Response:** User profile data
+
+### Get All Users
+- **Endpoint:** `GET /api/auth/getAllUsers`
+- **Description:** Get all users (admin only)
+- **Authentication:** Required
+- **Authorization:** Admin role required
+- **Response:** List of all users
+
+### Password Reset Flow
+- **Endpoint:** `POST /api/auth/forgot-password`
+- **Description:** Initiates password reset and sends OTP
+- **Request Body:**
+  ```json
+  {
+    "email": "string"
+  }
+  ```
+
+- **Endpoint:** `POST /api/auth/verify-otp`
+- **Description:** Verifies OTP for password reset
+- **Request Body:**
+  ```json
+  {
+    "email": "string",
+    "otp": "string"
+  }
+  ```
+
+- **Endpoint:** `POST /api/auth/reset-password`
+- **Description:** Resets password after OTP verification
+- **Request Body:** (Likely includes verified token, new password)
+
+## Blog Posts Endpoints
+Base path: `/api/posts`
+
+### Get All Posts
+- **Endpoint:** `GET /api/posts`
+- **Description:** Get all blog posts
+- **Authentication:** Not required
+- **Query Parameters:** Likely supports pagination
+
+### Create Post
+- **Endpoint:** `POST /api/posts`
+- **Description:** Create a new blog post
+- **Authentication:** Required
+- **Authorization:** Writer role required
+- **Request Body:** Multipart form data with post details and image
+- **Fields:**
+  - `title`: Post title
+  - `content`: Post content
+  - `category`: Category ID
+  - `PostImg`: Image file (optional)
+
+### Delete Post
+- **Endpoint:** `DELETE /api/posts/:id`
+- **Description:** Delete a post (writer can delete own posts)
+- **Authentication:** Required
+- **Authorization:** Writer role required, post ownership verified
+- **Parameters:**
+  - `id`: Post ID
+
+### Update Post
+- **Endpoint:** `PUT /api/posts/:id`
+- **Description:** Update a post (writer can update own posts)
+- **Authentication:** Required
+- **Authorization:** Writer role required, post ownership verified
+- **Parameters:**
+  - `id`: Post ID
+- **Request Body:** Multipart form data with updated post details
+
+### Summarize Post
+- **Endpoint:** `GET /api/posts/summerize/:id`
+- **Description:** Get AI-generated summary of a post using Gemini
+- **Parameters:**
+  - `id`: Post ID
+
+### Admin Post Management
+- **Endpoint:** `DELETE /api/posts/admin/:id`
+- **Description:** Admin delete any post
+- **Authentication:** Required
+- **Authorization:** Admin role required
+- **Parameters:**
+  - `id`: Post ID
+
+- **Endpoint:** `PUT /api/posts/admin/approve/:id`
+- **Description:** Approve a post
+- **Authentication:** Required
+- **Authorization:** Admin role required
+- **Parameters:**
+  - `id`: Post ID
+
+- **Endpoint:** `PUT /api/posts/admin/disapprove/:id`
+- **Description:** Disapprove a post
+- **Authentication:** Required
+- **Authorization:** Admin role required
+- **Parameters:**
+  - `id`: Post ID
+
+## Comments Endpoints
+Base path: `/api/comments`
+
+### Get All Comments for a Post
+- **Endpoint:** `GET /api/comments/:blogId`
+- **Description:** Get all comments for a specific blog post
+- **Parameters:**
+  - `blogId`: Blog post ID
+
+### Add Comment
+- **Endpoint:** `POST /api/comments/:blogId`
+- **Description:** Add a comment to a blog post
+- **Authentication:** Required
+- **Parameters:**
+  - `blogId`: Blog post ID
+- **Request Body:** Comment data
+
+### Reply to Comment
+- **Endpoint:** `POST /api/comments/reply/:commentId`
+- **Description:** Reply to an existing comment
+- **Authentication:** Required
+- **Parameters:**
+  - `commentId`: Comment ID
+- **Request Body:** Reply data
+
+### Edit/Delete Comments
+- Additional endpoints likely exist for editing and deleting comments
+
+## Category Endpoints
+Base path: `/api/categories`
+
+### Create Category
+- **Endpoint:** `POST /api/categories/catergory/:id`
+- **Description:** Create a new category
+- **Authentication:** Required
+- **Authorization:** Admin role required
+- **Parameters:**
+  - `id`: Likely parent category ID or placeholder
+- **Request Body:** Category data
+
+### Delete Category
+- **Endpoint:** `DELETE /api/categories/catergory/:id`
+- **Description:** Delete a category
+- **Authentication:** Required
+- **Authorization:** Admin role required
+- **Parameters:**
+  - `id`: Category ID
+
+## Challenge System Endpoints
+Base path: `/api/challenges`
+
+### Create Challenge
+- **Endpoint:** `POST /api/challenges/post/:id`
+- **Description:** Create a new challenge for a post
+- **Authentication:** Required
+- **Parameters:**
+  - `id`: Post ID
+- **Request Body:** Challenge data
+
+### Get Challenges
+- **Endpoint:** `GET /api/challenges/post/:id`
+- **Description:** Get all challenges for a post
+- **Parameters:**
+  - `id`: Post ID
+
+### Update Challenge Status
+- **Endpoint:** `PATCH /api/challenges/:id`
+- **Description:** Update challenge status
+- **Authentication:** Required
+- **Parameters:**
+  - `id`: Challenge ID
+- **Request Body:** Updated status data
+
+### Delete Challenge
+- **Endpoint:** `DELETE /api/challenges/:id`
+- **Description:** Delete a challenge
+- **Authentication:** Required
+- **Parameters:**
+  - `id`: Challenge ID
+
+## Chat System Endpoints
+Base path: `/api/chat`
+
+### Get Chat History
+- **Endpoint:** `GET /api/chat`
+- **Description:** Get chat history
+- **Authentication:** Likely required
+
+### Chat List
+- **Endpoint:** `GET /api/chat`
+- **Description:** Get list of chats
+- **Authentication:** Likely required
+
+## Follow System Endpoints
+Base path: `/api/follow`
+
+### Follow User
+- **Endpoint:** `POST /api/follow/follow/:followingId`
+- **Description:** Follow another user
+- **Authentication:** Required
+- **Parameters:**
+  - `followingId`: ID of user to follow
+
+### Unfollow User
+- **Endpoint:** `POST /api/follow/unfollow`
+- **Description:** Unfollow a user
+- **Authentication:** Required
+- **Request Body:** Unfollow data
+
+### Get Followers
+- **Endpoint:** `GET /api/follow/followers/:userId`
+- **Description:** Get all followers of a user
+- **Parameters:**
+  - `userId`: User ID
+
+### Get Following
+- **Endpoint:** `GET /api/follow/following/:userId`
+- **Description:** Get all users followed by a user
+- **Parameters:**
+  - `userId`: User ID
+
+## Voting System Endpoints
+Base path: `/api/vote`
+
+### Upvote Post
+- **Endpoint:** `POST /api/vote/upvote`
+- **Description:** Upvote a post
+- **Request Body:** Vote data
+
+### Downvote Post
+- **Endpoint:** `POST /api/vote/downvote`
+- **Description:** Downvote a post
+- **Request Body:** Vote data
+
+### Get Post Votes
+- **Endpoint:** `GET /api/vote/votes/:postId`
+- **Description:** Get all votes for a post
+- **Parameters:**
+  - `postId`: Post ID
+
+## Activity Logging Endpoints
+Base path: `/api/activity`
+
+- Endpoints for tracking and retrieving user activity logs
+
+## Post Love Reactions Endpoints
+Base path: `/api/post-love`
+
+- Endpoints for adding, removing, and counting love reactions on posts
+
+## Notification Endpoints
+Base path: `/api/notifications` (inferred)
+
+### Get User Notifications
+- **Endpoint:** `GET /api/notifications`
+- **Description:** Get paginated notifications for the authenticated user
+- **Authentication:** Required
+- **Query Parameters:**
+  - `page`: Page number (default: 1)
+  - `limit`: Items per page (default: 10)
+
+### Get Notification Summary
+- **Endpoint:** `GET /api/notifications/summary`
+- **Description:** Get AI-powered summary of unread notifications
+- **Authentication:** Required
+
+## Authentication and Authorization
+
+Many endpoints require authentication and specific roles:
+
+1. Authentication is handled via JWT tokens
+2. Include the token in request headers:
+   ```
+   Authorization: Bearer your-token-here
+   ```
+
+### Roles
+- **Writer**: Can create, edit, and delete their own posts
+- **Admin**: Has full access to manage all posts and comments
+- **User**: Can comment and manage their own comments
+
+## Real-time Features
+
+The API includes Socket.IO integration for real-time features:
+- Chat messaging
+- Post updates
+- Notifications
+
+## Error Handling
+
+The API uses standard HTTP status codes:
+- 200: Success
+- 201: Created
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 500: Internal Server Error
+
+Error responses include a message describing the error:
+```json
+{
+  "error": "Error message description"
+}
+```
+
+## AI Integration
+
+The API integrates with Google's Gemini AI for features like:
+- Blog post summarization
+- Notification summaries

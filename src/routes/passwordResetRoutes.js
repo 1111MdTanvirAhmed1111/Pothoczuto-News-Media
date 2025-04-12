@@ -7,7 +7,7 @@ router.post('/forgot-password', forgotPassword);
 
 // Route for verifying OTP
 router.post('/verify-otp', verifyOTP);
-
+ 
 // Route for resetting password after OTP verification
 router.post('/reset-password', resetPassword);
 
