@@ -24,7 +24,7 @@ const authMiddleware = async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { id: decoded.id }, // Prisma uses 'id' instead of '_id'
     });
-console.log(user, decoded.id)
+
     // Check if user exists
     // Note: This is a basic check. You might want to add more checks based on your application's requirements, such as checking if the user is still active, etc.
     if (!user) {

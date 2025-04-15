@@ -12,6 +12,7 @@ const voteRoutes = require('@/routes/voteRoutes');
 const passwordResetRoutes = require('@/routes/passwordResetRoutes');
 const activityRoutes = require('@/routes/activityLogRoutes');
 const postLoveRoutes = require('@/routes/postLoveRoutes');
+const notificationRoutes = require('@/routes/notificationRoutes')
 
 const useRoutes = () => {
 
@@ -32,7 +33,7 @@ const useRoutes = () => {
     app.use('/api/auth' , passwordResetRoutes);
     app.use('/api/activity', activityRoutes);
     app.use('/api/post-love', postLoveRoutes);
-
+    app.use('/api/notifications', notificationRoutes);
 }
 
 module.exports = {useRoutes};
