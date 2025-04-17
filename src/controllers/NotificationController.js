@@ -76,7 +76,8 @@ exports.getNotificationSummary = async (req, res) => {
       }
     });
 
-    if (unreadNotifications.length === 0) {
+    if (!unreadNotifications) {
+      console.log("No new notifications", unreadNotifications);
       return res.status(200).json({
         summary: "You have no new notifications."
       });
