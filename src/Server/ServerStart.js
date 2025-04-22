@@ -4,12 +4,17 @@ const { Server } = require('socket.io');
 const app = express();
 const httpServer = createServer(app);
 const {socketWork} = require('@/config/socket');
+const cors = require('cors');
+
+
+
 
 app.use(express.json());
+app.use(cors())
 const io = new Server(httpServer, {
   cors: {
-    // origin: ["https://pothoczuto.xyz"], // Your Next.js app URL
-    // methods: ["GET", "POST"],
+    origin: ["https://pothoczuto.xyz","http://localhost:3000"], // Your Next.js app URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     transports: ['websocket', 'polling'] // Add explicit transports
   },
