@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
   });
 
   const { error } = validateInput(req.body, schema);
-  if (error) return res.status(400).json({ message: error.details[0].message });
+  if (error) return res.status(400).json({ message: error.details[0].message, status: 400 });
 
   try {
     const { username, email, password } = req.body;
@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
       where: { email },
     });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists.' });
+      return res.status(400).json({ message: 'User already exists.', status: 400 });
     }
 
     // Hash the password
@@ -41,9 +41,9 @@ exports.register = async (req, res) => {
       },
     });
 
-    res.status(201).json({ message: 'User registered successfully.', status: 200 });
+    res.status(201).json({ message: 'User registered successfully.', status: 201 });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message, status: 500 });
   }
 };
 
@@ -54,7 +54,7 @@ exports.login = async (req, res) => {
   });
 
   const { error } = validateInput(req.body, schema);
-  if (error) return res.status(400).json({ message: error.details[0].message });
+  if (error) return res.status(400).json({ message: error.details[0].message, status: 400 });
 
   try {
     const { email, password } = req.body;
@@ -63,7 +63,7 @@ exports.login = async (req, res) => {
     const user = await prisma.user.findFirst({
       where: { email },
     });
-    if (!user) return res.status(400).json({ message: 'Invalid email or password.' });
+    if (!user) return res.status(400).json({ message: 'Invalid email or password.', status: 400 });
 
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
@@ -75,9 +75,9 @@ exports.login = async (req, res) => {
         { expiresIn: '1h' }
       );
 
-      res.status(200).json({ token });
+      res.status(200).json({ token , status:200});
     } else {
-      return res.status(400).json({ message: 'Invalid email or password.' });
+      return res.status(400).json({ message: 'Invalid email or password.', status:400 });
     }
   } catch (err) {
     res.status(500).json({ message: err.message, status:500 });
@@ -85,12 +85,12 @@ exports.login = async (req, res) => {
 };
 
 exports.getUserData = async (req, res) => {
-  
+
     // Get the token from the Authorization header
- 
+
 
     try {
-  
+
 
       // Find user by id (exclude password from response) and include followers/following
       const user = await prisma.user.findUnique({
@@ -137,7 +137,7 @@ exports.getUserData = async (req, res) => {
       const following = user.following.map(f => f.following);
 
       // Return user data with followers and following
-      res.status(200).json(user);
+      res.status(200).json({...user, status: 200});
     } catch (err) {
       if (err.name === 'JsonWebTokenError') {
         return res.status(401).json({ message: 'Invalid token' });
@@ -147,13 +147,13 @@ exports.getUserData = async (req, res) => {
       }
       throw err;
     }
- 
+
 };
 
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
-        
+
       select: {
         id: true,
         username: true,
@@ -184,10 +184,10 @@ exports.getAllUsers = async (req, res) => {
           }
         }
       }
-    }); 
+    });
     res.status(200).json(users);
   } catch (err) {
-    res.status(500).json({ message: err.message }); 
+    res.status(500).json({ message: err.message });
   }
 };
 
