@@ -26,7 +26,7 @@ const addLoveReaction = async (req, res) => {
     });
 
     if (existingLove) {
-      return res.status(400).json({ message: "You have already loved this post." });
+      return res.status(400).json({ message: "You have already loved this post." , status:400});
     }
 
     // Create new love reaction
