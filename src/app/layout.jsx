@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Sidebar from '@/components/kits/Sidebar'
 import Navbar from '@/components/Navbar'
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Suspense } from 'react';
 
 
 
@@ -83,6 +84,8 @@ export default function RootLayout({ children }) {
         </div>
 
         <div className="overflow-y-scroll h-[90vh]">
+
+
           {children}
           </div>
           </div>
