@@ -1,8 +1,5 @@
 
-export default async function Profile() {
-
-await new Promise((resolve) => setTimeout(resolve, 1000))
-
+export default function Profile() {
 
   return (
     <div>Profile</div>

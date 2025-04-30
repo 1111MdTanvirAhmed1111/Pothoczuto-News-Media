@@ -1,7 +1,9 @@
+"use client"
+
 import Link from "next/link"
 import { Noto_Sans_Bengali } from "next/font/google"
 import { MessageCircleMore, Users } from "lucide-react"
-import SearchBar from './kits/SearchBar';
+
 
 const bengali = Noto_Sans_Bengali({ 
   subsets: ["bengali"],
@@ -27,7 +29,7 @@ function Navbar() {
 
 
       <div className="flex">
-    <SearchBar />
+
       </div>
 
 
