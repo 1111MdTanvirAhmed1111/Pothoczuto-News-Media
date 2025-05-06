@@ -5,7 +5,7 @@ const roleMiddleware = require('@/middlewares/roleMiddleware');
 
 
 router.get('/',getAllCategories)
-router.post('/catergory/:id',authMiddleware ,roleMiddleware('admin'), createCategory)
-router.delete('/catergory/:id', authMiddleware ,roleMiddleware('admin'), deleteCategory)
+router.post('/:id',authMiddleware ,roleMiddleware('admin'), createCategory)
+router.delete('/:id', authMiddleware ,roleMiddleware('admin'), deleteCategory)
 
 module.exports = router;

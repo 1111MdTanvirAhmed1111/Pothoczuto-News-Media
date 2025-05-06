@@ -2,7 +2,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-
+const {sendMail} = require('@/utils/emailService');
 const { validateInput } = require('@/utils/validateInput');
 const { prisma } = require('@/config/dbConnect');
 
@@ -31,21 +31,46 @@ exports.register = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
+const otp = generateOTP().toString();
     // Create new user
     const user = await prisma.user.create({
       data: {
         username,
         email,
         password: hashedPassword,
+        otpCode: otp
       },
     });
+   await sendMail(email, 'Verify your email for user Register', `Your OTP is ${otp}`);
 
     res.status(201).json({ message: 'User registered successfully.', status: 201 });
   } catch (err) {
     res.status(500).json({ message: err.message, status: 500 });
   }
 };
+
+exports.verifyRegister = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find user by email
+    const user = await prisma.user.findFirst({
+      where: { email },
+    });
+    if (!user) return res.status(400).json({ message: 'User not found.', status: 400 });
+
+    // Update user's verification status
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { verified: true },
+    });
+
+    res.status(200).json({ message: 'User verified successfully.', status: 200 });
+  } catch (err) {
+    res.status(500).json({ message: err.message, status: 500 });
+  }
+};
+
 
 exports.login = async (req, res) => {
   const schema = Joi.object({
@@ -64,6 +89,7 @@ exports.login = async (req, res) => {
       where: { email },
     });
     if (!user) return res.status(400).json({ message: 'Invalid email or password.', status: 400 });
+    if(!user.verified) return res.status(400).json({ message: 'Please verify your email.', status: 400 });
 
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
@@ -231,7 +257,7 @@ exports.forgotPassword = async (req, res) => {
     });
 
     // Send OTP via email
-    const { sendOTPEmail } = require('@/utils/emailService');
+    const { sendOTPEmail, sendMail } = require('@/utils/emailService');
     const emailSent = await sendOTPEmail(email, otp);
 
     if (!emailSent) {

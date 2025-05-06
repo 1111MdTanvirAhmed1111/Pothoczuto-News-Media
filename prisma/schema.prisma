@@ -133,6 +133,9 @@ model User {
   role                  Role            @default(user)
   profilePic            String          @default("")
   coverPic              String          @default("")
+  bio                   String?         @default("")
+  verified              Boolean         @default(false)
+  otpCode               String?         @default("")
   lastNotificationViewedAt DateTime?    // New field to track last notification view
   comments              Comment[]
   replies               Reply[]
