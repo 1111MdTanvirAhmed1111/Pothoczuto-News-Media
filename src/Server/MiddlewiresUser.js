@@ -3,7 +3,7 @@ const {app} = require('@/Server/ServerStart')
 const path = require('path');
 const cors = require('cors')
 const { errorHandler, notFoundHandler } = require('@/utils/errorHandler'); // Updated
-
+const morgan = require('morgan');
 
 const MiddlewiresUser = () => { 
 
@@ -16,6 +16,7 @@ app.use(notFoundHandler);
 
 // Global error handler
 app.use(errorHandler);
+
 }
 
 module.exports = {MiddlewiresUser}

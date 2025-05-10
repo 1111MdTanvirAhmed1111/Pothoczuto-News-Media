@@ -5,11 +5,12 @@ const app = express();
 const httpServer = createServer(app);
 const {socketWork} = require('@/config/socket');
 const cors = require('cors');
-
+const morgan = require('morgan')
 
 
 
 app.use(express.json());
+app.use(morgan('dev'))
 app.use(cors())
 const io = new Server(httpServer, {
   cors: {
