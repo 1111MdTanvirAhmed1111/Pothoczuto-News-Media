@@ -2,9 +2,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const {sendMail} = require('@/utils/emailService');
 const { validateInput } = require('@/utils/validateInput');
 const { prisma } = require('@/config/dbConnect');
+const { sendOTPEmail, sendMail } = require('@/utils/emailService');
+const { ResetotpMailText } = require('@/utils/Mails/allMails');
 
 
 
@@ -25,6 +26,15 @@ exports.register = async (req, res) => {
     const existingUser = await prisma.user.findFirst({
       where: { email },
     });
+    if(existingUser && !existingUser.verified){
+      const otp = generateOTP().toString();
+      await prisma.user.update({
+        where: { id: existingUser.id },
+        data: { otpCode: otp },
+      });
+      await sendMail(email, 'Verify your email for user Register', ResetotpMailText(otp));
+      return res.status(400).json({ message: 'Verifiy By Otp Which is sent on your Email', status: 400 });
+    }
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists.', status: 400 });
     }
@@ -51,18 +61,26 @@ const otp = generateOTP().toString();
 
 exports.verifyRegister = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email,otp } = req.body;
 
     // Find user by email
     const user = await prisma.user.findFirst({
       where: { email },
     });
+
+    
     if (!user) return res.status(400).json({ message: 'User not found.', status: 400 });
+    if(user.verified){
+      return res.status(400).json({ message: 'User already verified.', status: 400 });
+    }
+    if (user.otpCode !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP.', status: 400 });
+    }
 
     // Update user's verification status
     await prisma.user.update({
       where: { id: user.id },
-      data: { verified: true },
+      data: { verified: true , otpCode: ''},
     });
 
     res.status(200).json({ message: 'User verified successfully.', status: 200 });
@@ -256,13 +274,11 @@ exports.forgotPassword = async (req, res) => {
       }
     });
 
-    // Send OTP via email
-    const { sendOTPEmail, sendMail } = require('@/utils/emailService');
     const emailSent = await sendOTPEmail(email, otp);
 
     if (!emailSent) {
       return res.status(500).json({ message: 'Failed to send OTP email.' });
-    }
+    } 
 
     res.status(200).json({ message: 'OTP sent to your email.' });
   } catch (err) {

@@ -65,7 +65,6 @@ model Post {
   content    String
   authorId   String
   imageUrl   String?
-  category   String?
   date       DateTime   @default(now())
   status     PostStatus @default(APPROVED)
   comments   Comment[]
@@ -80,7 +79,7 @@ model Post {
 model Category {
   id         String   @id @default(cuid())
   name       String   @unique
-  posts      Post[]
+  posts      Post[]   // Many-to-many relation with Post
 }
 
 model Vote {
