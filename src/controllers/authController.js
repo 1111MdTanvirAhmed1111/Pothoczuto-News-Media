@@ -68,22 +68,31 @@ exports.verifyRegister = async (req, res) => {
       where: { email },
     });
 
-    
-    if (!user) return res.status(400).json({ message: 'User not found.', status: 400 });
-    if(user.verified){
+
+    if(user){
+       if(user.verified){
       return res.status(400).json({ message: 'User already verified.', status: 400 });
     }
+    else{
+      
     if (user.otpCode !== otp) {
       return res.status(400).json({ message: 'Invalid OTP.', status: 400 });
     }
-
-    // Update user's verification status
+    else if(user.otpCode === otp){
+       // Update user's verification status
     await prisma.user.update({
       where: { id: user.id },
       data: { verified: true , otpCode: ''},
     });
+      return res.status(200).json({ message: 'User verified successfully.', status: 200 });
+    }
+    }
+    
+    }
+    else{
+     return res.status(400).json({ message: 'User not found.', status: 400 });
+    }
 
-    res.status(200).json({ message: 'User verified successfully.', status: 200 });
   } catch (err) {
     res.status(500).json({ message: err.message, status: 500 });
   }
