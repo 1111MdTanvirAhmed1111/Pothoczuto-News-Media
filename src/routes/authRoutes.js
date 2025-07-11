@@ -6,7 +6,7 @@ const authMiddleware = require('@/middlewares/authMiddleware');
 const router = express.Router();
 
 router.post('/register', register);
-router.post('/verify-register', verifyRegister);
+router.post('/verify', verifyRegister);
 router.post('/login', login);
 router.get('/userdata', authMiddleware , getUserData);
 router.get('/getAllUsers', authMiddleware , roleMiddleware('admin') , getAllUsers);
